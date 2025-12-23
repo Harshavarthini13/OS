@@ -1,54 +1,38 @@
-#include <stdio.h> 
+#include <stdio.h>
 
-#include <stdlib.h> 
+int main() {
+    int pages, frames, i, j, k = 0, faults = 0;
 
-#include <pthread.h> 
+    printf("Enter number of pages: ");
+    scanf("%d", &pages);
 
-// Thread function 
+    int page[pages];
+    printf("Enter page reference string:\n");
+    for (i = 0; i < pages; i++)
+        scanf("%d", &page[i]);
 
-void* print_message(void* thread_id) { 
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
 
-    int tid = *((int*)thread_id); 
+    int frame[frames];
+    for (i = 0; i < frames; i++)
+        frame[i] = -1;
 
-    printf("Hello from Thread %d\n", tid); 
+    for (i = 0; i < pages; i++) {
+        int found = 0;
+        for (j = 0; j < frames; j++) {
+            if (frame[j] == page[i]) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            frame[k] = page[i];
+            k = (k + 1) % frames;
+            faults++;
+        }
+    }
 
-    pthread_exit(NULL); 
-
-} 
-
-int main() { 
-
-    pthread_t threads[3]; 
-
-    int thread_ids[3] = {1, 2, 3}; 
-
-    int status; 
-    // Creating 3 threads 
-
-    for (int i = 0; i < 3; i++) { 
-
-        printf("Creating Thread %d\n", thread_ids[i]); 
-
-        status = pthread_create(&threads[i], NULL, print_message, (void*)&thread_ids[i]); 
-
-        if (status != 0) { 
-
-            printf("Error: Unable to create thread %d\n", thread_ids[i]); 
-
-            exit(-1); 
-
-        } 
-
-    } 
-    // Joining threads 
-
-    for (int i = 0; i < 3; i++) { 
-
-        pthread_join(threads[i], NULL); 
-
-    } 
-    printf("All threads completed. Exiting main program.\n"); 
-
-    return 0; 
-
-}   
+    printf("Total Page Faults = %d\n", faults);
+    return 0;
+}
